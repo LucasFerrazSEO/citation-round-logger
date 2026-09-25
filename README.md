@@ -1,61 +1,88 @@
-# citation-round-logger — ferramenta grátis e de código aberto para medir citação por IA
+**English** · [Português (Brasil)](README.pt-BR.md)
 
-`citation-round-logger` é uma ferramenta gratuita e de código aberto, em
-linha de comando, para registrar "rodadas de citação": rodar o mesmo
-prompt em várias IAs (ChatGPT, Claude, Gemini, Perplexity...), anotar se
-cada marca do seu conjunto de comparação apareceu na resposta e em que
-posição, e depois calcular o share of voice por marca e por IA.
+# citation-round-logger
 
-## O que é uma rodada de citação
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE) ![Python 3.9+](https://img.shields.io/badge/python-3.9%2B-blue.svg)
 
-O método é simples e manual de propósito: você roda um prompt real (algo
-que um cliente perguntaria, tipo "melhor agência de SEO em Belo
-Horizonte") em cada assistente de IA, lê a resposta com atenção, e
-registra o que apareceu. Depois de várias rodadas ao longo do tempo, o
-relatório mostra quem a IA está recomendando de fato — não uma estimativa,
-um registro do que você observou.
+`citation-round-logger` is a free, open source command-line tool for
+logging "citation rounds": you run the same prompt in several AI
+assistants (ChatGPT, Claude, Gemini, Perplexity...), note whether each
+brand in your comparison set appeared in the answer and in which
+position, and then calculate share of voice per brand and per AI. It runs
+locally and stores the rounds in a local JSON file. The tool prints its
+report in Brazilian Portuguese.
 
-**Esta ferramenta não consulta nenhuma IA automaticamente.** Não é um
-raspador nem usa API de nenhum assistente — é o formato estruturado do
-método, para você não perder o registro de rodadas antigas nem depender de
-planilha solta.
+## Contents
 
-## Instalação
+- [Background](#background)
+- [Requirements](#requirements)
+- [Installation](#installation)
+- [Usage](#usage)
+- [FAQ](#faq)
+- [Limitations](#limitations)
+- [Methodology](#methodology)
+- [Contributing](#contributing)
+- [Author](#author)
+- [License](#license)
 
-Só biblioteca padrão do Python (3.9 ou mais recente). Sem dependência
-externa.
+## Background
+
+The method is simple and manual on purpose. You run a real prompt
+(something a customer would ask, such as "melhor agência de SEO em Belo
+Horizonte") in each AI assistant, read the answer carefully and record
+what appeared. After several rounds over time, the report shows who the
+AI is actually recommending. It is not an estimate, it is a record of
+what you observed.
+
+**This tool does not query any AI automatically.** It is not a scraper
+and it does not use any assistant's API. It is the structured format of
+the method, so you do not lose the record of past rounds or depend on a
+loose spreadsheet.
+
+## Requirements
+
+Python 3.9 or newer. Standard library only, no external dependencies.
+
+## Installation
 
 ```bash
-git clone https://github.com/lucasferrazseo/citation-round-logger.git
+git clone https://github.com/LucasFerrazSEO/citation-round-logger.git
 cd citation-round-logger
 ```
 
-## Como usar, passo a passo
+## Usage
 
-**1. Rode o prompt manualmente em uma IA**, fora desta ferramenta — abra o
-ChatGPT, o Claude, o Gemini ou a Perplexity e digite a pergunta real que
-um cliente faria.
+**1. Run the prompt manually in an AI assistant**, outside this tool.
+Open ChatGPT, Claude, Gemini or Perplexity and type the real question a
+customer would ask.
 
-**2. Leia a resposta e registre o que apareceu.** Se sua marca e um
-concorrente apareceram, com posição:
+**2. Read the answer and log what appeared.** If your brand and a
+competitor appeared, with their positions:
 
 ```bash
 python citation_round_logger.py log --ia chatgpt --prompt "melhor agencia de seo em bh" \
     --marca "Minha Empresa" --posicao 2 --marca "Concorrente X" --posicao 1
 ```
 
-**3. Se nenhuma marca do seu conjunto apareceu**, registre como ausente:
+Each `--marca` needs a matching `--posicao`, in the same order.
+
+**3. If no brand from your set appeared**, log it as absent:
 
 ```bash
 python citation_round_logger.py log --ia perplexity --prompt "melhor agencia de seo em bh" \
     --marca "Minha Empresa" --ausente
 ```
 
-**4. Repita em outra IA, mesmo prompt.** É a comparação entre IAs, no
-mesmo prompt, que revela o share of voice de verdade.
+**4. Repeat in another AI with the same prompt.** Comparing AIs on the
+same prompt is what shows the real share of voice.
 
-**5. Depois de várias rodadas, gere o relatório.** Exemplo real de saída,
-depois de duas rodadas registradas:
+**5. After several rounds, generate the report.**
+
+```bash
+python citation_round_logger.py report
+```
+
+A real output example, after two logged rounds:
 
 ```
 === citation-round-logger: report (2 rodada(s)) ===
@@ -68,62 +95,63 @@ depois de duas rodadas registradas:
   claude         0/1 rodada(s) (0% share of voice)
 ```
 
-```bash
-python citation_round_logger.py report
-```
-
-**6. Filtre o relatório por uma única IA**, se quiser comparar o
-desempenho lá especificamente:
+**6. Filter the report by a single AI** if you want to compare
+performance there specifically:
 
 ```bash
 python citation_round_logger.py report --ia chatgpt
 ```
 
-**7. Use um arquivo de rodadas separado por projeto ou cliente**:
+**7. Use a separate rounds file per project or client.** `--arquivo` goes
+before the subcommand:
 
 ```bash
 python citation_round_logger.py --arquivo cliente-x-rodadas.json log --ia gemini --prompt "..." --marca "..." --posicao 1
 ```
 
-## Perguntas frequentes
+## FAQ
 
-**citation-round-logger é realmente grátis?**
-Sim, código aberto sob licença MIT.
+**Is citation-round-logger really free?**
+Yes. It is open source under the MIT license.
 
-**A ferramenta consulta a IA por mim?**
-Não. Você roda o prompt manualmente (ou por outra ferramenta/API própria)
-e registra aqui o que observou. Isso é proposital: evita depender de
-chave de API paga e mantém o controle de qualidade da leitura da resposta
-com você.
+**Does the tool query the AI for me?**
+No. You run the prompt manually (or through another tool or your own API
+setup) and log here what you observed. This is on purpose: it avoids
+depending on a paid API key and keeps the quality control of reading the
+answer with you.
 
-**Quantas rodadas preciso para o share of voice fazer sentido?**
-Não há um número mínimo garantido, mas uma rodada só (uma resposta, uma
-vez) é uma amostra pequena demais para tirar conclusão — repita ao longo
-do tempo, porque a mesma pergunta pode gerar respostas diferentes em
-execuções diferentes da mesma IA.
+**How many rounds do I need for share of voice to make sense?**
+There is no guaranteed minimum, but a single round (one answer, one time)
+is too small a sample to draw a conclusion. Repeat over time, because the
+same question can produce different answers in different runs of the
+same AI.
 
-**Os dados ficam salvos onde?**
-Em um arquivo JSON local (`rodadas.json` por padrão, ou o nome que você
-passar em `--arquivo`). Nenhum dado é enviado para servidor nenhum.
+**Where is the data stored?**
+In a local JSON file (`rodadas.json` by default, or the name you pass in
+`--arquivo`). No data is sent to any server.
 
-## Limitações
+## Limitations
 
-Registro manual: a qualidade do dado depende de quem roda o prompt e lê a
-resposta com cuidado. Não normaliza variação de grafia de marca entre
-rodadas — use sempre o mesmo texto exato para a mesma marca, ou o relatório
-vai contar como entidades diferentes.
+Logging is manual: data quality depends on whoever runs the prompt and
+reads the answer carefully. Brand spelling variations across rounds are
+not normalized. Always use the exact same text for the same brand, or the
+report will count them as different entities.
 
-## Método e origem
+## Methodology
 
-Formato aberto do método de "rodada de citação" usado internamente para
-medir recomendação por IA em [lucasferrazseo.com](https://lucasferrazseo.com),
-sem nenhum dado de cliente — só a estrutura do registro.
+This is the open format of the "citation round" method used internally
+to measure AI recommendations at
+[lucasferrazseo.com](https://lucasferrazseo.com), with no client data,
+only the structure of the record.
 
-## Autor
+## Contributing
 
-[Lucas Ferraz](https://lucasferraz.com) — especialista em SEO, criação de
-sites e SEO para IA, fundador da [Lucas Ferraz SEO](https://lucasferrazseo.com).
+Bug reports and suggestions are welcome through [GitHub Issues](https://github.com/LucasFerrazSEO/citation-round-logger/issues).
 
-## Licença
+## Author
 
-MIT — ver [LICENSE](LICENSE).
+[Lucas Ferraz](https://lucasferraz.com) is an SEO, website development and Generative Engine Optimization specialist and the founder of [Lucas Ferraz SEO](https://lucasferrazseo.com).
+
+## License
+
+MIT. See [LICENSE](LICENSE).
